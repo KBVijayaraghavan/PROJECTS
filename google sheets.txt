@@ -1,0 +1,75 @@
+var Sheet = SpreadsheetApp.openById('1eKGB_QcyqeMzGoEqtUHzdYabA1jLwElsu0pHDtrE9cg');
+var timezone = "asia/kolkata"
+var hours = +6
+var str = "";
+function doPost(e) {
+  var parsedData;
+  var result = {};
+
+  try { 
+    parsedData = JSON.parse(e.postData.contents);
+  } 
+  catch(f){
+    return ContentService.createTextOutput("Error in parsing request body: " + f.message);
+  }
+     if (parsedData !== undefined){
+    var flag = parsedData.format;
+    if (flag === undefined){
+      flag = 0;
+    }
+        var sheet = Sheet.getSheetByName(parsedData.sheet_name); 
+    var dataArr = parsedData.values.split(",");
+         
+    var Current_Date = new Date(new Date().setHours(new Date().getHours() + hours));
+    var Current_Time = Utilities.formatDate(Current_Date, timezone, 'HH:mm:ss');
+    var value0 = dataArr [0]; 
+    var value1 = dataArr [1]; 
+    var value2 = dataArr [2]; 
+    var value3 = dataArr [3]; 
+    var value4 = dataArr [4]; s
+           
+    switch (parsedData.command) {
+      
+      case "insert_row":
+         
+         sheet.insertRows(2); 
+         
+         
+          
+         sheet.getRange('A2').setValue(Current_Date);
+         sheet.getRange('B2').setValue(Current_Time); 
+         sheet.getRange('C2').setValue(value0);   
+         sheet.getRange('D2').setValue(value1);   
+         sheet.getRange('E2').setValue(value2);   
+         sheet.getRange('F2').setValue(value3);   
+         sheet.getRange('G2').setValue(value4);   
+         
+         str = "Success"; 
+         SpreadsheetApp.flush();
+         break;
+         
+      case "append_row":
+         
+         var publish_array = new Array(); 
+         
+         publish_array [0] = date_now; 
+         publish_array [1] = time_now; 
+         publish_array [2] = value0;   
+         publish_array [3] = value1;   
+         publish_array [4] = value2;   
+         
+         sheet.appendRow(publish_array); 
+         
+         str = "Success"; 
+         SpreadsheetApp.flush();
+         break;     
+ 
+    }
+    
+    return ContentService.createTextOutput(str);
+  } 
+  
+  else {
+    return ContentService.createTextOutput("Error! Request body empty or in incorrect format.");
+  }
+}
